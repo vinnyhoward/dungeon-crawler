@@ -1,5 +1,5 @@
 use crate::prelude::*;
-const NUM_ROOMS: usize = 20;
+const NUM_ROOMS: usize = 30;
 
 pub struct MapBuilder {
     pub map: Map,
@@ -75,10 +75,10 @@ impl MapBuilder {
 
             if rng.range(0, 2) == 1 {
                 self.apply_horizontal_tunnel(prev.x, new.x, prev.y);
-                self.apply_vertical_tunnel(prev.y, new.y, prev.x);
+                self.apply_vertical_tunnel(prev.y, new.y, new.x);
             } else {
                 self.apply_vertical_tunnel(prev.y, new.y, prev.x);
-                self.apply_horizontal_tunnel(prev.x, new.x, prev.y);
+                self.apply_horizontal_tunnel(prev.x, new.x, new.y);
             }
         }
     }
