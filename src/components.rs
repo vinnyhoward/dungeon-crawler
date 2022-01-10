@@ -9,6 +9,14 @@ pub struct Render {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Player; // Tag
 
-
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Enemy; // Tag
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct MovingRandomly; // Tag
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WantsToMove {
+    pub entity: Entity,
+    pub destination: Point,
+}
