@@ -1,6 +1,5 @@
 <h1 align="center">
-<a href="https://ibb.co/mt2jf2L"><img src="https://i.ibb.co/S0MjFMh/Screen-Shot-2022-01-09-at-7-52-51-PM.png" alt="Screen-Shot-2022-01-09-at-7-52-51-PM" border="0"></a>
-<br />
+<a href="https://ibb.co/mt2jf2L"><img src="https://i.ibb.co/S0MjFMh/Screen-Shot-2022-01-09-at-7-52-51-PM.png" alt="Screen-Shot-2022-01-09-at-7-52-51-PM" "></a>
 <h1 align="center">
   Dungeon Crawler
 </h1>
