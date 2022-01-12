@@ -7,13 +7,13 @@ pub struct Render {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Player; // Tag
+pub struct Player;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Enemy; // Tag
+pub struct Enemy;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct MovingRandomly; // Tag
+pub struct MovingRandomly;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WantsToMove {
@@ -21,6 +21,13 @@ pub struct WantsToMove {
     pub destination: Point,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WantsToAttack {
+    pub attacker: Entity,
+    pub victim: Entity,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Health {
     pub current: i32,
     pub max: i32,
