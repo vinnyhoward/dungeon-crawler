@@ -1,14 +1,20 @@
 use crate::prelude::*;
-mod automata;
-mod drunkard;
 mod empty;
 mod rooms;
-use automata::CellularAutomataArchitect;
-use drunkard::DrunkardWalkArchitect;
 use rooms::RoomsArchitect;
+mod automata;
+use automata::CellularAutomataArchitect;
+mod drunkard;
+use drunkard::DrunkardWalkArchitect;
+mod prefab;
+use prefab::apply_prefab;
 
 trait MapArchitect {
     fn new(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder;
+}
+
+pub trait MapTheme: Sync + Send {
+    fn tile_to_render(&self, tile_type: TileType) -> FontCharType;
 }
 
 const NUM_ROOMS: usize = 20;
@@ -23,12 +29,12 @@ pub struct MapBuilder {
 impl MapBuilder {
     pub fn new(rng: &mut RandomNumberGenerator) -> Self {
         let mut architect: Box<dyn MapArchitect> = match rng.range(0, 3) {
-            0 => Box::new(RoomsArchitect {}),
-            1 => Box::new(DrunkardWalkArchitect {}),
-            2 => Box::new(CellularAutomataArchitect {}),
-            _ => panic!("Invalid map architect"),
+            0 => Box::new(DrunkardWalkArchitect {}),
+            1 => Box::new(RoomsArchitect {}),
+            _ => Box::new(CellularAutomataArchitect {}),
         };
         let mut mb = architect.new(rng);
+        apply_prefab(&mut mb, rng);
         mb
     }
 
@@ -122,28 +128,25 @@ impl MapBuilder {
     }
 
     fn spawn_monsters(&self, start: &Point, rng: &mut RandomNumberGenerator) -> Vec<Point> {
-        let num_monsters: usize = 50;
+        const NUM_MONSTERS: usize = 50;
         let mut spawnable_tiles: Vec<Point> = self
             .map
             .tiles
             .iter()
             .enumerate()
-            .filter(|(idx, t)|// (1)
-                **t == TileType::Floor &&
-                    DistanceAlg::Pythagoras.distance2d(
-                        *start,
-                        self.map.index_to_point2d(*idx)
-                    ) > 10.0)
+            .filter(|(idx, t)| {
+                **t == TileType::Floor
+                    && DistanceAlg::Pythagoras.distance2d(*start, self.map.index_to_point2d(*idx))
+                        > 10.0
+            })
             .map(|(idx, _)| self.map.index_to_point2d(idx))
             .collect();
 
         let mut spawns = Vec::new();
-        for _ in 0..num_monsters {
-            let target_index = rng
-                .random_slice_index(&spawnable_tiles) // (2)
-                .unwrap();
+        for _ in 0..NUM_MONSTERS {
+            let target_index = rng.random_slice_index(&spawnable_tiles).unwrap();
             spawns.push(spawnable_tiles[target_index].clone());
-            spawnable_tiles.remove(target_index); // (3)
+            spawnable_tiles.remove(target_index);
         }
         spawns
     }
