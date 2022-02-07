@@ -36,6 +36,9 @@ pub fn map_render(
                     TileType::Wall => {
                         draw_batch.set(pt - offset, ColorPair::new(tint, BLACK), glyph);
                     }
+                    TileType::Exit => {
+                        draw_batch.set(pt - offset, ColorPair::new(tint, BLACK), glyph);
+                    }
                 }
             }
         }

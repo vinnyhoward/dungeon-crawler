@@ -60,7 +60,6 @@ pub fn player_input(
             .find_map(|(entity, pos)| Some((*entity, *pos + delta)))
             .unwrap();
 
-
         if delta.x != 0 || delta.y != 0 {
             let mut hit_something = false;
             enemies
