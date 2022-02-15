@@ -7,6 +7,7 @@ use crate::prelude::*;
 #[write_component(Health)]
 #[read_component(Item)]
 #[read_component(Carried)]
+#[read_component(Weapon)]
 pub fn player_input(
     ecs: &mut SubWorld,
     commands: &mut CommandBuffer,
@@ -22,12 +23,7 @@ pub fn player_input(
             VirtualKeyCode::Right => Point::new(1, 0),
             VirtualKeyCode::Up => Point::new(0, -1),
             VirtualKeyCode::Down => Point::new(0, 1),
-            VirtualKeyCode::A => Point::new(-1, 0),
-            VirtualKeyCode::D => Point::new(1, 0),
-            VirtualKeyCode::W => Point::new(0, -1),
-            VirtualKeyCode::S => Point::new(0, 1),
             VirtualKeyCode::G => {
-                // (1)
                 let (player, player_pos) = players
                     .iter(ecs)
                     .find_map(|(entity, pos)| Some((*entity, *pos)))
@@ -40,6 +36,18 @@ pub fn player_input(
                     .for_each(|(entity, _item, _item_pos)| {
                         commands.remove_component::<Point>(*entity);
                         commands.add_component(*entity, Carried(player));
+
+                        if let Ok(e) = ecs.entry_ref(*entity) {
+                            if e.get_component::<Weapon>().is_ok() {
+                                // (1)
+                                <(Entity, &Carried, &Weapon)>::query()
+                                    .iter(ecs)
+                                    .filter(|(_, c, _)| c.0 == player)
+                                    .for_each(|(e, c, w)| {
+                                        commands.remove(*e); // (2)
+                                    })
+                            }
+                        }
                     });
                 Point::new(0, 0)
             }
@@ -60,6 +68,7 @@ pub fn player_input(
             .find_map(|(entity, pos)| Some((*entity, *pos + delta)))
             .unwrap();
 
+        let mut did_something = false;
         if delta.x != 0 || delta.y != 0 {
             let mut hit_something = false;
             enemies
@@ -67,6 +76,8 @@ pub fn player_input(
                 .filter(|(_, pos)| **pos == destination)
                 .for_each(|(entity, _)| {
                     hit_something = true;
+                    did_something = true;
+
                     commands.push((
                         (),
                         WantsToAttack {
@@ -77,6 +88,7 @@ pub fn player_input(
                 });
 
             if !hit_something {
+                did_something = true;
                 commands.push((
                     (),
                     WantsToMove {
@@ -86,7 +98,6 @@ pub fn player_input(
                 ));
             }
         };
-
         *turn_state = TurnState::PlayerTurn;
     }
 }
